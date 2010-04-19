@@ -1,1 +1,3 @@
-map.show_task_board 'versions/task_board/:id', :controller => 'task_boards', :action => 'show'
+ActionController::Routing::Routes.draw do |map|
+  map.show_task_board 'task_boards/show/:id/:version_id', :controller => 'task_boards', :action => 'show'
+end

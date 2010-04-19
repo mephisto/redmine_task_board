@@ -17,6 +17,8 @@ class TaskBoardsController < ApplicationController
     @stories_with_tasks.each do |story, tasks|
       @stories_with_tasks[story] = tasks.group_by(&:status)
     end
+
+    @baseUri = Redmine::Utils.relative_uri_root
   end
   
   def update_issue_status
@@ -39,7 +41,15 @@ class TaskBoardsController < ApplicationController
 private
   def find_version_and_project
     @project = Project.find(params[:id])
-    @version = @project.current_version
+    @versions = @project.shared_versions.sort
+    @versions.reject! {|version| version.closed? || version.completed? } unless params[:completed]
+
+    if params[:version_id]
+      @version = Version.find(params[:version_id])
+    else
+      @version = @versions.first
+    end
+
     render_error(l(:task_board_text_no_sprint)) and return unless @version
   end
 end
